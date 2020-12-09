@@ -1,4 +1,43 @@
-
+@model BooksSite.Models.BookResult
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BookSite</title>
+</head>
+<body>
+<header>
+    <h1>Book Site @DateTime.Now.Year</h1>
+</header>
 <div>
-    <h1>Book Site</h1>
+    <form method="get">
+        <input name="q" type="text">
+        <input type="submit" value="Search">
+    </form>
 </div>
+<div>
+    @foreach (var book in Model.GoogleBooks)
+    {
+        <table style="margin-top:10px;border:1px solid #000;padding: 5px;">
+            <tr>
+                <td>Title:</td>
+                <td>@book.Title</td>
+            </tr>
+            <tr>
+                <td>Isbn10:</td>
+                <td>@book.ISBN10</td>
+            </tr>
+            <tr>
+                <td>Isbn13:</td>
+                <td>@book.ISBN13</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><img src="@book.ThumbNail" /> </td>
+            </tr>
+        </table>
+    }
+</div>
+
+</body>
+</html>
