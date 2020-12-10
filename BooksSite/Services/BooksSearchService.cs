@@ -9,8 +9,7 @@ namespace BooksSite.Services
     public class BooksSearchService : IBookSearchService
     {
         private readonly string baseUrl = "https://www.googleapis.com/books/v1/volumes?";
-
-
+        
         private string FindRaw(string q, string author = null, string title = null, string filter = null, string orderBy = null)
         {
             string query = string.Empty;
@@ -66,8 +65,8 @@ namespace BooksSite.Services
 
                     if(volumeInfo == null) continue;
                     
-                    var isbn10 = ParseIsbn10(volumeInfo);
-                    var isbn13 = ParseIsbn13(volumeInfo);
+                    var isbn10 = ParseIsbn(volumeInfo, "ISBN_10");
+                    var isbn13 = ParseIsbn(volumeInfo, "ISBN_13");
                     var categories = ParseCategories(volumeInfo);
                     var authors = ParseAuthors(volumeInfo);
 
@@ -90,7 +89,7 @@ namespace BooksSite.Services
             return findBookResult; 
        }
        
-       private string ParseIsbn10(dynamic volumeInfo)
+       private static string ParseIsbn(dynamic volumeInfo, string type)
        {
            var isbn10 = string.Empty;
 
@@ -98,7 +97,7 @@ namespace BooksSite.Services
            {
                foreach (var ii in volumeInfo.industryIdentifiers)
                {
-                   if (ii.type == "ISBN_10")
+                   if (ii.type == type)
                    {
                        isbn10 = ii.identifier;
                    }
@@ -108,25 +107,7 @@ namespace BooksSite.Services
            return isbn10;
        }
        
-       private string ParseIsbn13(dynamic volumeInfo)
-       {
-           var isbn13 = string.Empty;
-
-           if (volumeInfo.industryIdentifiers != null)
-           {
-               foreach (var ii in volumeInfo.industryIdentifiers)
-               {
-                   if (ii.type == "ISBN_13")
-                   {
-                       isbn13 = ii.identifier;
-                   }
-               }
-           }
-
-           return isbn13;
-       }
-
-       private List<string> ParseCategories(dynamic volumeInfo)
+       private static List<string> ParseCategories(dynamic volumeInfo)
        {
            var categories = new List<string>();
            if (volumeInfo.categories != null)
@@ -140,7 +121,7 @@ namespace BooksSite.Services
            return categories;
        }
 
-       private List<string> ParseAuthors(dynamic volumeInfo)
+       private static List<string> ParseAuthors(dynamic volumeInfo)
        {
            var authors = new List<string>();
            if (volumeInfo.authors != null)

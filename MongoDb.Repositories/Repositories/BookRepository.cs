@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -29,6 +30,30 @@ namespace MongoDb.Repositories.Repositories
         public async Task Create(Book book)
         {
             await _context.Books.InsertOneAsync(book);
+        }
+
+        public async Task<Book> GetBookByIsbn10(string isbn10)
+        {
+            var filter = Builders<Book>.Filter.Eq(m => m.Isbn10, isbn10);
+            return await _context.Books.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task CreateManyIfNotExists(IEnumerable<Book> books)
+        {
+            var createdBooks = new List<Book>();
+
+            var index = 0;
+            foreach (var book in books)
+            {
+                var existingBook = await GetBookByIsbn10(book.Isbn10);
+                if (existingBook != null) continue;
+                
+                book.Id = await GetNextId() + index;
+                createdBooks.Add(book);
+                index += 1;
+            }
+            
+            await _context.Books.InsertManyAsync(createdBooks.AsEnumerable());
         }
 
         public async Task<bool> Update(Book book)

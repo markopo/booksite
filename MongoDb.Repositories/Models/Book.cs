@@ -28,6 +28,6 @@ namespace MongoDb.Repositories.Models
         public string Isbn13 { get; set; }
         public string Isbn10 { get; set; }  
         
-        public string Tags { get; set; }
+        public string Tag { get; set; }
     }
 }
